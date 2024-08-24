@@ -1,19 +1,23 @@
 import os
+import sqlalchemy
+import configparser
+
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 
 env = os.environ['ENV']
+config = configparser.ConfigParser()
+db_config = 'real.ini' if env == 'real' else 'local.ini'
+config.read('dbconfig-' + db_config)
 
-DB_USER = '0000'
-DB_PASSWORD = '0000'
-DB_HOST = 'localhost'
-DB_PORT = '3306'
-DB_NAME = 'test'
-if env == 'real':
-    DB_HOST = '0000000'
-    DB_PORT = '0000'
-
-DB_URL = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+DB_URL = sqlalchemy.engine.URL.create(
+    drivername='mysql+pymysql',
+    username=config['WORKSPACEDB']['USER'],
+    password=config['WORKSPACEDB']['PASSWORD'],
+    host=config['WORKSPACEDB']['HOST'],
+    port=config['WORKSPACEDB']['PORT'],
+    database=config['WORKSPACEDB']['DATABASE']
+)
 
 class engineconn:
     def __init__(self):
