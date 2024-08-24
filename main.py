@@ -5,15 +5,14 @@ from models import Test
 
 app = FastAPI()
 
-engine = engineconn()
-session = engine.sessionmaker()
-
 class Item(BaseModel):
     name: str
     number: int
 
 @app.get("/")
 async def root():
+    engine = engineconn()
+    session = engine.sessionmaker()
     example = session.query(Test).all()
     return example
 
